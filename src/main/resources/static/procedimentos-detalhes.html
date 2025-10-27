@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Detalhes - OdontoPrice</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <div class="app-container">
+    <div id="sidebar"></div>
+    <main class="main-content">
+      <div class="container" style="max-width: 64rem;">
+        <a href="/procedimentos.html" class="btn btn-ghost mb-4">${icons.arrowLeft} Voltar</a>
+        <div id="content"><div class="loading"><div class="spinner"></div></div></div>
+      </div>
+    </main>
+  </div>
+  <script src="/js/api.js"></script>
+  <script src="/js/utils.js"></script>
+  <script src="/js/components.js"></script>
+  <script>
+    document.getElementById('sidebar').innerHTML = createSidebar('procedimentos');
+    const id = getQueryParam('id');
+    
+    Promise.all([api.getProcedimento(id), api.getPacientes()]).then(([proc, pacientes]) => {
+      if (!proc) { toast.error('Não encontrado'); return; }
+      const paciente = proc.pacienteId ? pacientes.find(p => p.id === proc.pacienteId) : null;
+      
+      document.getElementById('content').innerHTML = `
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">${proc.nome_procedimento}</h1>
+            <p class="page-subtitle">Detalhes do procedimento</p>
+          </div>
+          <a href="/procedimentos-form.html?id=${id}" class="btn btn-primary">${icons.pencil} Editar</a>
+        </div>
+        <div class="card">
+          <div class="card-header"><h2 class="card-title">Informações Gerais</h2></div>
+          <div class="card-content">
+            <div class="grid grid-cols-2">
+              <div>
+                <p style="font-size: 0.875rem; color: var(--muted-foreground);">Nome</p>
+                <p style="font-size: 1.125rem; font-weight: 500; margin-top: 0.25rem;">${proc.nome_procedimento}</p>
+              </div>
+              <div>
+                <p style="font-size: 0.875rem; color: var(--muted-foreground); margin-bottom: 0.5rem;">Assistente</p>
+                ${createBadge(proc.assistente === 'S' ? 'Sim' : 'Não', proc.assistente === 'S' ? 'primary' : 'secondary')}
+              </div>
+              <div>
+                <p style="font-size: 0.875rem; color: var(--muted-foreground);">Duração</p>
+                <p style="font-size: 1.125rem; font-weight: 500; margin-top: 0.25rem;">${proc.duracao} minutos</p>
+              </div>
+              <div>
+                <p style="font-size: 0.875rem; color: var(--muted-foreground);">Valor Final</p>
+                <p style="font-size: 1.125rem; font-weight: 500; margin-top: 0.25rem; color: var(--accent);">${formatCurrency(proc.valorFinal)}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        ${paciente ? `
+          <div class="card" style="margin-top: 1rem;">
+            <div class="card-header"><h2 class="card-title">${icons.user} Paciente</h2></div>
+            <div class="card-content">
+              <div class="flex" style="justify-content: space-between;">
+                <div>
+                  <p style="font-size: 1.125rem; font-weight: 500;">${paciente.nome_paciente}</p>
+                  <p style="font-size: 0.875rem; color: var(--muted-foreground);">${paciente.idade} anos · ${paciente.fidelidade} visitas</p>
+                </div>
+                <a href="/pacientes-detalhes.html?id=${paciente.id}" class="btn btn-outline btn-sm">Ver Detalhes</a>
+              </div>
+            </div>
+          </div>
+        ` : ''}
+      `;
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pacientes - OdontoPrice</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <div class="app-container">
+    <div id="sidebar"></div>
+    
+    <main class="main-content">
+      <div class="container">
+        <div id="pageHeader"></div>
+        <div id="tableContainer"></div>
+      </div>
+    </main>
+  </div>
+  
+  <script src="/js/api.js"></script>
+  <script src="/js/utils.js"></script>
+  <script src="/js/components.js"></script>
+  <script>
+    document.getElementById('sidebar').innerHTML = createSidebar('pacientes');
+    
+    document.getElementById('pageHeader').innerHTML = createPageHeader(
+      'Pacientes',
+      'Gerencie os pacientes cadastrados',
+      `<a href="/pacientes-form.html" class="btn btn-primary">${icons.plus} Novo Paciente</a>`
+    );
+    
+    async function loadPacientes() {
+      const container = document.getElementById('tableContainer');
+      showLoading(container);
+      
+      try {
+        const pacientes = await api.getPacientes();
+        
+        const table = new DataTable(pacientes, [
+          { key: 'nome_paciente', label: 'Nome', sortable: true },
+          { 
+            key: 'idade', 
+            label: 'Idade', 
+            sortable: true,
+            render: (item) => `${item.idade} anos`
+          },
+          {
+            key: 'fidelidade',
+            label: 'Fidelidade',
+            sortable: true,
+            render: (item) => createBadge(
+              `${item.fidelidade} visitas`,
+              item.fidelidade >= 4 ? 'primary' : 'secondary'
+            )
+          },
+          {
+            key: 'actions',
+            label: 'Ações',
+            render: (item) => createActionButtons(
+              item.id,
+              'viewPaciente',
+              'editPaciente',
+              'deletePaciente'
+            )
+          }
+        ], {
+          searchKey: 'nome_paciente',
+          onRowClick: (item) => window.location.href = `/pacientes-detalhes.html?id=${item.id}`
+        });
+        
+        table.render(container);
+      } catch (error) {
+        toast.error('Erro ao carregar pacientes');
+        console.error(error);
+      }
+    }
+    
+    function viewPaciente(id) {
+      window.location.href = `/pacientes-detalhes.html?id=${id}`;
+    }
+    
+    function editPaciente(id) {
+      window.location.href = `/pacientes-form.html?id=${id}`;
+    }
+    
+    function deletePaciente(id) {
+      showConfirmDialog(
+        'Excluir Paciente',
+        'Tem certeza que deseja excluir este paciente? Esta ação não pode ser desfeita.',
+        async () => {
+          try {
+            await api.deletePaciente(id);
+            toast.success('Paciente excluído com sucesso');
+            loadPacientes();
+          } catch (error) {
+            toast.error('Erro ao excluir paciente');
+          }
+        }
+      );
+    }
+    
+    loadPacientes();
+  </script>
+</body>
+</html>

@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Paciente - OdontoPrice</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <div class="app-container">
+    <div id="sidebar"></div>
+    
+    <main class="main-content">
+      <div class="container" style="max-width: 48rem;">
+        <a href="/pacientes.html" class="btn btn-ghost mb-4">
+          ${icons.arrowLeft} Voltar
+        </a>
+        
+        <div id="pageHeader"></div>
+        
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">Informações do Paciente</h2>
+          </div>
+          <div class="card-content">
+            <form id="pacienteForm">
+              <div class="form-group">
+                <label class="form-label" for="nome_paciente">
+                  Nome Completo <span class="form-required">*</span>
+                </label>
+                <input type="text" id="nome_paciente" class="form-input" placeholder="Digite o nome do paciente" required>
+                <div class="form-error hidden" id="error-nome_paciente"></div>
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label" for="idade">
+                  Idade <span class="form-required">*</span>
+                </label>
+                <input type="number" id="idade" class="form-input" placeholder="Digite a idade" min="1" required>
+                <div class="form-error hidden" id="error-idade"></div>
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label" for="fidelidade">
+                  Fidelidade (número de visitas) <span class="form-required">*</span>
+                </label>
+                <input type="number" id="fidelidade" class="form-input" placeholder="Digite o número de visitas" min="0" required>
+                <div class="form-error hidden" id="error-fidelidade"></div>
+              </div>
+              
+              <div class="flex gap-2" style="margin-top: 1.5rem;">
+                <button type="submit" class="btn btn-primary" id="submitBtn">
+                  Cadastrar
+                </button>
+                <a href="/pacientes.html" class="btn btn-outline">
+                  Cancelar
+                </a>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  
+  <script src="/js/api.js"></script>
+  <script src="/js/utils.js"></script>
+  <script src="/js/components.js"></script>
+  <script>
+    document.getElementById('sidebar').innerHTML = createSidebar('pacientes');
+    
+    const id = getQueryParam('id');
+    const isEdit = !!id;
+    
+    document.getElementById('pageHeader').innerHTML = createPageHeader(
+      isEdit ? 'Editar Paciente' : 'Novo Paciente',
+      'Preencha os dados do paciente'
+    );
+    
+    if (isEdit) {
+      document.getElementById('submitBtn').textContent = 'Atualizar';
+      loadPaciente();
+    }
+    
+    async function loadPaciente() {
+      try {
+        const paciente = await api.getPaciente(id);
+        if (paciente) {
+          document.getElementById('nome_paciente').value = paciente.nome_paciente;
+          document.getElementById('idade').value = paciente.idade;
+          document.getElementById('fidelidade').value = paciente.fidelidade;
+        }
+      } catch (error) {
+        toast.error('Erro ao carregar paciente');
+      }
+    }
+    
+    function validate() {
+      let isValid = true;
+      const errors = document.querySelectorAll('.form-error');
+      errors.forEach(e => e.classList.add('hidden'));
+      
+      const nome = document.getElementById('nome_paciente').value.trim();
+      if (!nome) {
+        showError('nome_paciente', 'Nome é obrigatório');
+        isValid = false;
+      }
+      
+      const idade = parseInt(document.getElementById('idade').value);
+      if (!idade || idade <= 0) {
+        showError('idade', 'Idade deve ser maior que 0');
+        isValid = false;
+      }
+      
+      const fidelidade = parseInt(document.getElementById('fidelidade').value);
+      if (fidelidade === '' || isNaN(fidelidade) || fidelidade < 0) {
+        showError('fidelidade', 'Fidelidade deve ser maior ou igual a 0');
+        isValid = false;
+      }
+      
+      return isValid;
+    }
+    
+    function showError(field, message) {
+      const errorEl = document.getElementById(`error-${field}`);
+      errorEl.textContent = message;
+      errorEl.classList.remove('hidden');
+    }
+    
+    document.getElementById('pacienteForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      if (!validate()) return;
+      
+      const submitBtn = document.getElementById('submitBtn');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Salvando...';
+      
+      try {
+        const data = {
+          nome_paciente: document.getElementById('nome_paciente').value.trim(),
+          idade: parseInt(document.getElementById('idade').value),
+          fidelidade: parseInt(document.getElementById('fidelidade').value)
+        };
+        
+        if (isEdit) {
+          await api.updatePaciente(id, data);
+          toast.success('Paciente atualizado com sucesso');
+        } else {
+          await api.createPaciente(data);
+          toast.success('Paciente cadastrado com sucesso');
+        }
+        
+        window.location.href = '/pacientes.html';
+      } catch (error) {
+        toast.error('Erro ao salvar paciente');
+        submitBtn.disabled = false;
+        submitBtn.textContent = isEdit ? 'Atualizar' : 'Cadastrar';
+      }
+    });
+  </script>
+</body>
+</html>

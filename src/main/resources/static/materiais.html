@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Materiais - OdontoPrice</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <div class="app-container">
+    <div id="sidebar"></div>
+    
+    <main class="main-content">
+      <div class="container">
+        <div id="pageHeader"></div>
+        <div id="tableContainer"></div>
+      </div>
+    </main>
+  </div>
+  
+  <script src="/js/api.js"></script>
+  <script src="/js/utils.js"></script>
+  <script src="/js/components.js"></script>
+  <script>
+    document.getElementById('sidebar').innerHTML = createSidebar('materiais');
+    document.getElementById('pageHeader').innerHTML = createPageHeader(
+      'Materiais',
+      'Gerencie os materiais cadastrados',
+      `<a href="/materiais-form.html" class="btn btn-primary">${icons.plus} Novo Material</a>`
+    );
+    
+    async function loadMateriais() {
+      const container = document.getElementById('tableContainer');
+      showLoading(container);
+      
+      try {
+        const materiais = await api.getMateriais();
+        
+        const table = new DataTable(materiais, [
+          { key: 'nome_material', label: 'Nome', sortable: true },
+          { key: 'quantidade', label: 'Quantidade', sortable: true },
+          { 
+            key: 'valor', 
+            label: 'Valor', 
+            sortable: true,
+            render: (item) => formatCurrency(item.valor)
+          },
+          {
+            key: 'reutilizavel',
+            label: 'Reutilizável',
+            render: (item) => createBadge(
+              item.reutilizavel === 'S' ? 'Sim' : 'Não',
+              item.reutilizavel === 'S' ? 'primary' : 'secondary'
+            )
+          },
+          {
+            key: 'actions',
+            label: 'Ações',
+            render: (item) => createActionButtons(item.id, 'viewMaterial', 'editMaterial', 'deleteMaterial')
+          }
+        ], {
+          searchKey: 'nome_material',
+          onRowClick: (item) => window.location.href = `/materiais-detalhes.html?id=${item.id}`
+        });
+        
+        table.render(container);
+      } catch (error) {
+        toast.error('Erro ao carregar materiais');
+      }
+    }
+    
+    function viewMaterial(id) { window.location.href = `/materiais-detalhes.html?id=${id}`; }
+    function editMaterial(id) { window.location.href = `/materiais-form.html?id=${id}`; }
+    function deleteMaterial(id) {
+      showConfirmDialog('Excluir Material', 'Tem certeza que deseja excluir este material?', async () => {
+        try {
+          await api.deleteMaterial(id);
+          toast.success('Material excluído com sucesso');
+          loadMateriais();
+        } catch (error) {
+          toast.error('Erro ao excluir material');
+        }
+      });
+    }
+    
+    loadMateriais();
+  </script>
+</body>
+</html>

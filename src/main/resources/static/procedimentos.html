@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Procedimentos - OdontoPrice</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <div class="app-container">
+    <div id="sidebar"></div>
+    
+    <main class="main-content">
+      <div class="container">
+        <div id="pageHeader"></div>
+        <div id="tableContainer"></div>
+      </div>
+    </main>
+  </div>
+  
+  <script src="/js/api.js"></script>
+  <script src="/js/utils.js"></script>
+  <script src="/js/components.js"></script>
+  <script>
+    document.getElementById('sidebar').innerHTML = createSidebar('procedimentos');
+    document.getElementById('pageHeader').innerHTML = createPageHeader(
+      'Procedimentos',
+      'Gerencie os procedimentos cadastrados',
+      `<a href="/procedimentos-form.html" class="btn btn-primary">${icons.plus} Novo Procedimento</a>`
+    );
+    
+    async function loadProcedimentos() {
+      const container = document.getElementById('tableContainer');
+      showLoading(container);
+      
+      try {
+        const procedimentos = await api.getProcedimentos();
+        
+        const table = new DataTable(procedimentos, [
+          { key: 'nome_procedimento', label: 'Nome', sortable: true },
+          {
+            key: 'assistente',
+            label: 'Assistente',
+            render: (item) => createBadge(item.assistente === 'S' ? 'Sim' : 'Não', item.assistente === 'S' ? 'primary' : 'secondary')
+          },
+          { 
+            key: 'duracao', 
+            label: 'Duração', 
+            sortable: true,
+            render: (item) => `${item.duracao} min`
+          },
+          { 
+            key: 'valorFinal', 
+            label: 'Valor Final', 
+            sortable: true,
+            render: (item) => formatCurrency(item.valorFinal)
+          },
+          {
+            key: 'actions',
+            label: 'Ações',
+            render: (item) => createActionButtons(item.id, 'viewProc', 'editProc', 'deleteProc')
+          }
+        ], {
+          searchKey: 'nome_procedimento',
+          onRowClick: (item) => window.location.href = `/procedimentos-detalhes.html?id=${item.id}`
+        });
+        
+        table.render(container);
+      } catch (error) {
+        toast.error('Erro ao carregar procedimentos');
+      }
+    }
+    
+    function viewProc(id) { window.location.href = `/procedimentos-detalhes.html?id=${id}`; }
+    function editProc(id) { window.location.href = `/procedimentos-form.html?id=${id}`; }
+    function deleteProc(id) {
+      showConfirmDialog('Excluir Procedimento', 'Tem certeza que deseja excluir este procedimento?', async () => {
+        try {
+          await api.deleteProcedimento(id);
+          toast.success('Procedimento excluído com sucesso');
+          loadProcedimentos();
+        } catch (error) {
+          toast.error('Erro ao excluir procedimento');
+        }
+      });
+    }
+    
+    loadProcedimentos();
+  </script>
+</body>
+</html>

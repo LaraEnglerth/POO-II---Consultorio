@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - OdontoPrice</title>
+  <meta name="description" content="Sistema profissional de gestão e precificação de consultas odontológicas">
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <div class="app-container">
+    <div id="sidebar"></div>
+    
+    <main class="main-content">
+      <div class="container">
+        <div id="pageHeader"></div>
+        
+        <div class="grid grid-cols-3" id="statsGrid">
+          <!-- Stats cards will be inserted here -->
+        </div>
+        
+        <div class="grid grid-cols-3 mt-4" style="margin-top: 2rem;">
+          <a href="/pacientes-form.html" class="btn btn-primary" style="height: 6rem; flex-direction: column;">
+            ${icons.plus}
+            <span>Novo Paciente</span>
+          </a>
+          <a href="/procedimentos-form.html" class="btn btn-primary" style="height: 6rem; flex-direction: column;">
+            ${icons.plus}
+            <span>Novo Procedimento</span>
+          </a>
+          <a href="/materiais-form.html" class="btn btn-primary" style="height: 6rem; flex-direction: column;">
+            ${icons.plus}
+            <span>Novo Material</span>
+          </a>
+        </div>
+      </div>
+    </main>
+  </div>
+  
+  <script src="/js/api.js"></script>
+  <script src="/js/utils.js"></script>
+  <script src="/js/components.js"></script>
+  <script>
+    // Render sidebar
+    document.getElementById('sidebar').innerHTML = createSidebar('dashboard');
+    
+    // Render page header
+    document.getElementById('pageHeader').innerHTML = createPageHeader(
+      'Dashboard',
+      'Visão geral do sistema de precificação odontológica'
+    );
+    
+    // Load and display stats
+    async function loadStats() {
+      try {
+        const [pacientes, procedimentos, materiais] = await Promise.all([
+          api.getPacientes(),
+          api.getProcedimentos(),
+          api.getMateriais()
+        ]);
+        
+        const statsGrid = document.getElementById('statsGrid');
+        statsGrid.innerHTML = `
+          ${createStatCard('Total de Pacientes', pacientes.length, 'users', 'Cadastrados no sistema')}
+          ${createStatCard('Procedimentos', procedimentos.length, 'clipboard', 'Registrados')}
+          ${createStatCard('Materiais', materiais.length, 'package', 'Em estoque')}
+        `;
+      } catch (error) {
+        toast.error('Erro ao carregar estatísticas');
+        console.error(error);
+      }
+    }
+    
+    loadStats();
+  </script>
+</body>
+</html>

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Material - OdontoPrice</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <div class="app-container">
+    <div id="sidebar"></div>
+    
+    <main class="main-content">
+      <div class="container" style="max-width: 48rem;">
+        <a href="/materiais.html" class="btn btn-ghost mb-4">${icons.arrowLeft} Voltar</a>
+        <div id="pageHeader"></div>
+        
+        <div class="card">
+          <div class="card-header"><h2 class="card-title">Informações do Material</h2></div>
+          <div class="card-content">
+            <form id="materialForm">
+              <div class="form-group">
+                <label class="form-label" for="nome_material">Nome do Material <span class="form-required">*</span></label>
+                <input type="text" id="nome_material" class="form-input" required>
+                <div class="form-error hidden" id="error-nome_material"></div>
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label" for="quantidade">Quantidade <span class="form-required">*</span></label>
+                <input type="number" id="quantidade" class="form-input" step="0.01" min="0" required>
+                <div class="form-error hidden" id="error-quantidade"></div>
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label" for="valor">Valor (R$) <span class="form-required">*</span></label>
+                <input type="number" id="valor" class="form-input" step="0.01" min="0" required>
+                <div class="form-error hidden" id="error-valor"></div>
+              </div>
+              
+              <div class="form-switch">
+                <label class="switch">
+                  <input type="checkbox" id="reutilizavel">
+                  <span class="switch-slider"></span>
+                </label>
+                <label class="form-label" for="reutilizavel">Material reutilizável</label>
+              </div>
+              
+              <div class="flex gap-2" style="margin-top: 1.5rem;">
+                <button type="submit" class="btn btn-primary" id="submitBtn">Cadastrar</button>
+                <a href="/materiais.html" class="btn btn-outline">Cancelar</a>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  
+  <script src="/js/api.js"></script>
+  <script src="/js/utils.js"></script>
+  <script src="/js/components.js"></script>
+  <script>
+    document.getElementById('sidebar').innerHTML = createSidebar('materiais');
+    const id = getQueryParam('id');
+    const isEdit = !!id;
+    
+    document.getElementById('pageHeader').innerHTML = createPageHeader(
+      isEdit ? 'Editar Material' : 'Novo Material',
+      'Preencha os dados do material'
+    );
+    
+    if (isEdit) {
+      document.getElementById('submitBtn').textContent = 'Atualizar';
+      api.getMaterial(id).then(material => {
+        if (material) {
+          document.getElementById('nome_material').value = material.nome_material;
+          document.getElementById('quantidade').value = material.quantidade;
+          document.getElementById('valor').value = material.valor;
+          document.getElementById('reutilizavel').checked = material.reutilizavel === 'S';
+        }
+      });
+    }
+    
+    document.getElementById('materialForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const submitBtn = document.getElementById('submitBtn');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Salvando...';
+      
+      try {
+        const data = {
+          nome_material: document.getElementById('nome_material').value.trim(),
+          quantidade: parseFloat(document.getElementById('quantidade').value),
+          valor: parseFloat(document.getElementById('valor').value),
+          reutilizavel: document.getElementById('reutilizavel').checked ? 'S' : 'N'
+        };
+        
+        if (isEdit) {
+          await api.updateMaterial(id, data);
+          toast.success('Material atualizado com sucesso');
+        } else {
+          await api.createMaterial(data);
+          toast.success('Material cadastrado com sucesso');
+        }
+        
+        window.location.href = '/materiais.html';
+      } catch (error) {
+        toast.error('Erro ao salvar material');
+        submitBtn.disabled = false;
+        submitBtn.textContent = isEdit ? 'Atualizar' : 'Cadastrar';
+      }
+    });
+  </script>
+</body>
+</html>

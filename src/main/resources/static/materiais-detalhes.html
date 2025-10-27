@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Detalhes do Material - OdontoPrice</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <div class="app-container">
+    <div id="sidebar"></div>
+    
+    <main class="main-content">
+      <div class="container" style="max-width: 64rem;">
+        <a href="/materiais.html" class="btn btn-ghost mb-4">${icons.arrowLeft} Voltar</a>
+        <div id="content"><div class="loading"><div class="spinner"></div></div></div>
+      </div>
+    </main>
+  </div>
+  
+  <script src="/js/api.js"></script>
+  <script src="/js/utils.js"></script>
+  <script src="/js/components.js"></script>
+  <script>
+    document.getElementById('sidebar').innerHTML = createSidebar('materiais');
+    const id = getQueryParam('id');
+    
+    api.getMaterial(id).then(material => {
+      if (!material) {
+        toast.error('Material não encontrado');
+        return;
+      }
+      
+      document.getElementById('content').innerHTML = `
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">${material.nome_material}</h1>
+            <p class="page-subtitle">Detalhes do material</p>
+          </div>
+          <a href="/materiais-form.html?id=${id}" class="btn btn-primary">
+            ${icons.pencil} Editar
+          </a>
+        </div>
+        
+        <div class="card">
+          <div class="card-header"><h2 class="card-title">Informações Gerais</h2></div>
+          <div class="card-content">
+            <div class="grid grid-cols-2">
+              <div>
+                <p style="font-size: 0.875rem; color: var(--muted-foreground);">Nome</p>
+                <p style="font-size: 1.125rem; font-weight: 500; margin-top: 0.25rem;">${material.nome_material}</p>
+              </div>
+              <div>
+                <p style="font-size: 0.875rem; color: var(--muted-foreground);">Quantidade em Estoque</p>
+                <p style="font-size: 1.125rem; font-weight: 500; margin-top: 0.25rem;">${material.quantidade}</p>
+              </div>
+              <div>
+                <p style="font-size: 0.875rem; color: var(--muted-foreground);">Valor Unitário</p>
+                <p style="font-size: 1.125rem; font-weight: 500; margin-top: 0.25rem;">${formatCurrency(material.valor)}</p>
+              </div>
+              <div>
+                <p style="font-size: 0.875rem; color: var(--muted-foreground); margin-bottom: 0.5rem;">Reutilizável</p>
+                ${createBadge(material.reutilizavel === 'S' ? 'Sim' : 'Não', material.reutilizavel === 'S' ? 'primary' : 'secondary')}
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }).catch(error => {
+      toast.error('Erro ao carregar dados');
+    });
+  </script>
+</body>
+</html>
