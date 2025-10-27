@@ -5,7 +5,7 @@ function createSidebar(activePage) {
     <aside class="sidebar">
       <div class="sidebar-header">
         <h1 class="sidebar-title">
-          Odonto<span class="sidebar-title-accent">Price</span>
+          Ortho<span class="sidebar-title-accent">Price</span>
         </h1>
       </div>
       <nav class="sidebar-nav">

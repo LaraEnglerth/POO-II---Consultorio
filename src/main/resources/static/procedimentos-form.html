@@ -11,7 +11,7 @@
     <div id="sidebar"></div>
     <main class="main-content">
       <div class="container" style="max-width: 64rem;">
-        <a href="/procedimentos.html" class="btn btn-ghost mb-4">${icons.arrowLeft} Voltar</a>
+        <a href="/procedimentos.html" class="btn btn-ghost mb-4">Voltar</a>
         <div id="pageHeader"></div>
         <form id="form">
           <div class="card">
@@ -39,7 +39,32 @@
                 <select id="pacienteId" class="form-select"></select>
               </div>
             </div>
-          </div>
+              </div>
+
+              <div class="card" style="margin-top: 1rem;">
+                <div class="card-header"><h2 class="card-title">Materiais Utilizados</h2></div>
+                <div class="card-content">
+                  <div class="grid grid-cols-3" style="align-items: end; gap: .5rem;">
+                    <div class="form-group" style="margin:0;">
+                      <label class="form-label">Material</label>
+                      <select id="materialSelect" class="form-select"></select>
+                    </div>
+                    <div class="form-group" style="margin:0;">
+                      <label class="form-label">Quantidade</label>
+                      <input type="number" id="materialQuantidade" class="form-input" min="1" step="1" value="1">
+                    </div>
+                    <div style="margin:0;">
+                      <button type="button" class="btn btn-outline" id="addMaterialBtn">Adicionar</button>
+                    </div>
+                  </div>
+
+                  <div style="margin-top:1rem;">
+                    <label class="form-label">Materiais adicionados</label>
+                    <ul id="materiaisList" class="list"></ul>
+                    <small id="materiaisEmpty" class="muted">Nenhum material adicionado.</small>
+                  </div>
+                </div>
+              </div>
           <div class="card" style="margin-top: 1rem;">
             <div class="card-header"><h2 class="card-title">Valor Final</h2></div>
             <div class="card-content">
@@ -47,7 +72,7 @@
                 <div class="form-group" style="flex: 1; margin: 0;">
                   <input type="number" id="valorFinal" class="form-input" step="0.01" min="0" required>
                 </div>
-                <button type="button" class="btn btn-outline" onclick="calcularValor()">${icons.calculator} Calcular</button>
+                <button type="button" class="btn btn-outline" onclick="calcularValor()">Calcular</button>
               </div>
             </div>
           </div>
@@ -55,6 +80,10 @@
             <button type="submit" class="btn btn-primary" id="submitBtn">Cadastrar</button>
             <a href="/procedimentos.html" class="btn btn-outline">Cancelar</a>
           </div>
+          </div>
+
+
+          
         </form>
       </div>
     </main>
@@ -74,6 +103,66 @@
     
     if (isEdit) document.getElementById('submitBtn').textContent = 'Atualizar';
     
+    // Materiais - UI e lógica
+    let materiaisDisponiveis = [];
+    let materiaisSelecionados = [];
+
+    function renderMateriaisOptions() {
+      const sel = document.getElementById('materialSelect');
+      sel.innerHTML = materiaisDisponiveis.map(m =>
+        `<option value="${m.id}" data-nome="${m.nome_material}">${m.nome_material} (disponível: ${m.quantidade})</option>`
+      ).join('');
+    }
+
+    function renderMateriaisList() {
+      const list = document.getElementById('materiaisList');
+      const empty = document.getElementById('materiaisEmpty');
+      if (materiaisSelecionados.length === 0) {
+        list.innerHTML = '';
+        empty.style.display = 'block';
+        return;
+      }
+      empty.style.display = 'none';
+      list.innerHTML = materiaisSelecionados.map((m, idx) => {
+        const nome = m.material ? m.material.nome_material : (m.nome || 'Material');
+        return `<li class="list-item" style="display:flex;justify-content:space-between;align-items:center;padding:.25rem 0;">
+          <div>${nome} <small class="muted">x ${m.quantidade}</small></div>
+          <div>
+            <button type="button" class="btn btn-ghost" onclick="removeMaterial(${idx})">Remover</button>
+          </div>
+        </li>`;
+      }).join('');
+    }
+
+    // Tornar a função global para uso no onclick inline
+    window.removeMaterial = function(index) {
+      materiaisSelecionados.splice(index, 1);
+      renderMateriaisList();
+    };
+
+    document.getElementById('addMaterialBtn').addEventListener('click', () => {
+      const sel = document.getElementById('materialSelect');
+      const matId = sel.value;
+      const qtd = parseInt(document.getElementById('materialQuantidade').value, 10) || 0;
+      if (!matId) { toast.error('Selecione um material'); return; }
+      if (qtd <= 0) { toast.error('Quantidade inválida'); return; }
+
+      const materialObj = materiaisDisponiveis.find(m => m.id === matId);
+      // se já existe, somar quantidade
+      const existing = materiaisSelecionados.find(m => m.materialId === matId);
+      if (existing) {
+        existing.quantidade += qtd;
+      } else {
+        materiaisSelecionados.push({ materialId: matId, quantidade: qtd, material: materialObj });
+      }
+      renderMateriaisList();
+    });
+
+    // Carrega materiais disponíveis
+    api.getMateriais().then(mats => {
+      materiaisDisponiveis = mats || [];
+      renderMateriaisOptions();
+    });
     // Load pacientes
     api.getPacientes().then(pacientes => {
       const select = document.getElementById('pacienteId');
@@ -89,6 +178,16 @@
             document.getElementById('duracao').value = proc.duracao;
             document.getElementById('valorFinal').value = proc.valorFinal;
             document.getElementById('pacienteId').value = proc.pacienteId || '';
+
+            // Preencher materiais selecionados (proc.materiais já traz o objeto material via API)
+            if (Array.isArray(proc.materiais)) {
+              materiaisSelecionados = proc.materiais.map(m => ({
+                materialId: m.materialId,
+                quantidade: m.quantidade,
+                material: m.material
+              }));
+              renderMateriaisList();
+            }
           }
         });
       }
@@ -116,7 +215,7 @@
           duracao: parseFloat(document.getElementById('duracao').value),
           valorFinal: parseFloat(document.getElementById('valorFinal').value),
           pacienteId: document.getElementById('pacienteId').value || undefined,
-          materiais: []
+          materiais: materiaisSelecionados.map(m => ({ materialId: m.materialId, quantidade: m.quantidade }))
         };
         
         if (isEdit) {
