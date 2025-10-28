@@ -9,19 +9,19 @@ function createSidebar(activePage) {
         </h1>
       </div>
       <nav class="sidebar-nav">
-        <a href="/index.html" class="sidebar-link ${activePage === 'dashboard' ? 'active' : ''}">
+  <a href="./index.html" class="sidebar-link ${activePage === 'dashboard' ? 'active' : ''}">
           ${icons.dashboard}
           <span>Dashboard</span>
         </a>
-        <a href="/pacientes.html" class="sidebar-link ${activePage === 'pacientes' ? 'active' : ''}">
+  <a href="./pacientes.html" class="sidebar-link ${activePage === 'pacientes' ? 'active' : ''}">
           ${icons.users}
           <span>Pacientes</span>
         </a>
-        <a href="/procedimentos.html" class="sidebar-link ${activePage === 'procedimentos' ? 'active' : ''}">
+  <a href="./procedimentos.html" class="sidebar-link ${activePage === 'procedimentos' ? 'active' : ''}">
           ${icons.clipboard}
           <span>Procedimentos</span>
         </a>
-        <a href="/materiais.html" class="sidebar-link ${activePage === 'materiais' ? 'active' : ''}">
+  <a href="./materiais.html" class="sidebar-link ${activePage === 'materiais' ? 'active' : ''}">
           ${icons.package}
           <span>Materiais</span>
         </a>

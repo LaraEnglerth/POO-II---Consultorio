@@ -4,14 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Procedimento - OdontoPrice</title>
-  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="./css/styles.css">
 </head>
 <body>
   <div class="app-container">
     <div id="sidebar"></div>
     <main class="main-content">
       <div class="container" style="max-width: 64rem;">
-        <a href="/procedimentos.html" class="btn btn-ghost mb-4">Voltar</a>
+  <a href="./procedimentos.html" class="btn btn-ghost mb-4">Voltar</a>
         <div id="pageHeader"></div>
         <form id="form">
           <div class="card">
@@ -78,7 +78,7 @@
           </div>
           <div class="flex gap-2" style="margin-top: 1.5rem;">
             <button type="submit" class="btn btn-primary" id="submitBtn">Cadastrar</button>
-            <a href="/procedimentos.html" class="btn btn-outline">Cancelar</a>
+            <a href="./procedimentos.html" class="btn btn-outline">Cancelar</a>
           </div>
           </div>
 
@@ -88,9 +88,9 @@
       </div>
     </main>
   </div>
-  <script src="/js/api.js"></script>
-  <script src="/js/utils.js"></script>
-  <script src="/js/components.js"></script>
+  <script src="./js/api.js"></script>
+  <script src="./js/utils.js"></script>
+  <script src="./js/components.js"></script>
   <script>
     document.getElementById('sidebar').innerHTML = createSidebar('procedimentos');
     const id = getQueryParam('id');
@@ -225,7 +225,7 @@
           await api.createProcedimento(data);
           toast.success('Procedimento cadastrado');
         }
-        window.location.href = '/procedimentos.html';
+  window.location.href = './procedimentos.html';
       } catch (error) {
         toast.error('Erro ao salvar');
         btn.disabled = false;

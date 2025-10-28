@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Procedimentos - OdontoPrice</title>
-  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="./css/styles.css">
 </head>
 <body>
   <div class="app-container">
@@ -18,15 +18,15 @@
     </main>
   </div>
   
-  <script src="/js/api.js"></script>
-  <script src="/js/utils.js"></script>
-  <script src="/js/components.js"></script>
+  <script src="./js/api.js"></script>
+  <script src="./js/utils.js"></script>
+  <script src="./js/components.js"></script>
   <script>
     document.getElementById('sidebar').innerHTML = createSidebar('procedimentos');
     document.getElementById('pageHeader').innerHTML = createPageHeader(
-      'Procedimentos',
-      'Gerencie os procedimentos cadastrados',
-      `<a href="/procedimentos-form.html" class="btn btn-primary">${icons.plus} Novo Procedimento</a>`
+  'Procedimentos',
+  'Gerencie os procedimentos cadastrados',
+  `<a href="./procedimentos-form.html" class="btn btn-primary">${icons.plus} Novo Procedimento</a>`
     );
     
     async function loadProcedimentos() {
@@ -62,7 +62,7 @@
           }
         ], {
           searchKey: 'nome_procedimento',
-          onRowClick: (item) => window.location.href = `/procedimentos-detalhes.html?id=${item.id}`
+          onRowClick: (item) => window.location.href = `./procedimentos-detalhes.html?id=${item.id}`
         });
         
         table.render(container);
@@ -71,8 +71,8 @@
       }
     }
     
-    function viewProc(id) { window.location.href = `/procedimentos-detalhes.html?id=${id}`; }
-    function editProc(id) { window.location.href = `/procedimentos-form.html?id=${id}`; }
+  function viewProc(id) { window.location.href = `./procedimentos-detalhes.html?id=${id}`; }
+  function editProc(id) { window.location.href = `./procedimentos-form.html?id=${id}`; }
     function deleteProc(id) {
       showConfirmDialog('Excluir Procedimento', 'Tem certeza que deseja excluir este procedimento?', async () => {
         try {

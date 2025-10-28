@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Material - OdontoPrice</title>
-  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="./css/styles.css">
 </head>
 <body>
   <div class="app-container">
@@ -12,7 +12,7 @@
     
     <main class="main-content">
       <div class="container" style="max-width: 48rem;">
-        <a href="/materiais.html" class="btn btn-ghost mb-4">Voltar</a>
+  <a href="./materiais.html" class="btn btn-ghost mb-4">Voltar</a>
         <div id="pageHeader"></div>
         
         <div class="card">
@@ -47,7 +47,7 @@
               
               <div class="flex gap-2" style="margin-top: 1.5rem;">
                 <button type="submit" class="btn btn-primary" id="submitBtn">Cadastrar</button>
-                <a href="/materiais.html" class="btn btn-outline">Cancelar</a>
+                <a href="./materiais.html" class="btn btn-outline">Cancelar</a>
               </div>
             </form>
           </div>
@@ -56,9 +56,9 @@
     </main>
   </div>
   
-  <script src="/js/api.js"></script>
-  <script src="/js/utils.js"></script>
-  <script src="/js/components.js"></script>
+  <script src="./js/api.js"></script>
+  <script src="./js/utils.js"></script>
+  <script src="./js/components.js"></script>
   <script>
     document.getElementById('sidebar').innerHTML = createSidebar('materiais');
     const id = getQueryParam('id');
@@ -104,7 +104,7 @@
           toast.success('Material cadastrado com sucesso');
         }
         
-        window.location.href = '/materiais.html';
+  window.location.href = './materiais.html';
       } catch (error) {
         toast.error('Erro ao salvar material');
         submitBtn.disabled = false;

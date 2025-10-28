@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Detalhes do Paciente - OdontoPrice</title>
-  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="./css/styles.css">
 </head>
 <body>
   <div class="app-container">
@@ -12,7 +12,7 @@
     
     <main class="main-content">
       <div class="container" style="max-width: 64rem;">
-        <a href="/pacientes.html" class="btn btn-ghost mb-4">
+  <a href="./pacientes.html" class="btn btn-ghost mb-4">
           ${icons.arrowLeft} Voltar
         </a>
         
@@ -23,9 +23,9 @@
     </main>
   </div>
   
-  <script src="/js/api.js"></script>
-  <script src="/js/utils.js"></script>
-  <script src="/js/components.js"></script>
+  <script src="./js/api.js"></script>
+  <script src="./js/utils.js"></script>
+  <script src="./js/components.js"></script>
   <script>
     document.getElementById('sidebar').innerHTML = createSidebar('pacientes');
     
@@ -60,7 +60,7 @@
                 </thead>
                 <tbody>
                   ${procedimentos.map(p => `
-                    <tr style="cursor: pointer;" onclick="window.location.href='/procedimentos-detalhes.html?id=${p.id}'">
+                    <tr style="cursor: pointer;" onclick="window.location.href='./procedimentos-detalhes.html?id=${p.id}'">
                       <td>${p.nome_procedimento}</td>
                       <td>${p.duracao} min</td>
                       <td>${createBadge(p.assistente === 'S' ? 'Sim' : 'Não', p.assistente === 'S' ? 'primary' : 'secondary')}</td>
@@ -79,7 +79,7 @@
               <h1 class="page-title">${paciente.nome_paciente}</h1>
               <p class="page-subtitle">Detalhes do paciente</p>
             </div>
-            <a href="/pacientes-form.html?id=${id}" class="btn btn-primary">
+            <a href="./pacientes-form.html?id=${id}" class="btn btn-primary">
               ${icons.pencil} Editar
             </a>
           </div>
