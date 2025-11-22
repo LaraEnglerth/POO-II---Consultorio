@@ -38,7 +38,7 @@
         const pacientes = await api.getPacientes();
         
         const table = new DataTable(pacientes, [
-          { key: 'nome_paciente', label: 'Nome', sortable: true },
+          { key: 'nomePaciente', label: 'Nome', sortable: true },
           { 
             key: 'idade', 
             label: 'Idade', 
@@ -65,7 +65,7 @@
             )
           }
         ], {
-          searchKey: 'nome_paciente',
+          searchKey: 'nomePaciente',
           onRowClick: (item) => window.location.href = `./pacientes-detalhes.html?id=${item.id}`
         });
         

@@ -30,7 +30,7 @@
       document.getElementById('content').innerHTML = `
         <div class="page-header">
           <div>
-            <h1 class="page-title">${proc.nome_procedimento}</h1>
+            <h1 class="page-title">${proc.nomeProcedimento}</h1>
             <p class="page-subtitle">Detalhes do procedimento</p>
           </div>
           <a href="./procedimentos-form.html?id=${id}" class="btn btn-primary">${icons.pencil} Editar</a>
@@ -41,7 +41,7 @@
             <div class="grid grid-cols-2">
               <div>
                 <p style="font-size: 0.875rem; color: var(--muted-foreground);">Nome</p>
-                <p style="font-size: 1.125rem; font-weight: 500; margin-top: 0.25rem;">${proc.nome_procedimento}</p>
+                <p style="font-size: 1.125rem; font-weight: 500; margin-top: 0.25rem;">${proc.nomeProcedimento}</p>
               </div>
               <div>
                 <p style="font-size: 0.875rem; color: var(--muted-foreground); margin-bottom: 0.5rem;">Assistente</p>
@@ -64,7 +64,7 @@
             <div class="card-content">
               <div class="flex" style="justify-content: space-between;">
                 <div>
-                  <p style="font-size: 1.125rem; font-weight: 500;">${paciente.nome_paciente}</p>
+                  <p style="font-size: 1.125rem; font-weight: 500;">${paciente.nomePaciente}</p>
                   <p style="font-size: 0.875rem; color: var(--muted-foreground);">${paciente.idade} anos · ${paciente.fidelidade} visitas</p>
                 </div>
                 <a href="./pacientes-detalhes.html?id=${paciente.id}" class="btn btn-outline btn-sm">Ver Detalhes</a>

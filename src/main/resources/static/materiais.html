@@ -37,7 +37,7 @@
         const materiais = await api.getMateriais();
         
         const table = new DataTable(materiais, [
-          { key: 'nome_material', label: 'Nome', sortable: true },
+          { key: 'nomeMaterial', label: 'Nome', sortable: true },
           { key: 'quantidade', label: 'Quantidade', sortable: true },
           { 
             key: 'valor', 
@@ -49,8 +49,8 @@
             key: 'reutilizavel',
             label: 'Reutilizável',
             render: (item) => createBadge(
-              item.reutilizavel === 'S' ? 'Sim' : 'Não',
-              item.reutilizavel === 'S' ? 'primary' : 'secondary'
+              item.reutilizavel ? 'Sim' : 'Não',
+              item.reutilizavel ? 'primary' : 'secondary'
             )
           },
           {
@@ -59,10 +59,10 @@
             render: (item) => createActionButtons(item.id, 'viewMaterial', 'editMaterial', 'deleteMaterial')
           }
         ], {
-          searchKey: 'nome_material',
+          searchKey: 'nomeMaterial',
           onRowClick: (item) => window.location.href = `./materiais-detalhes.html?id=${item.id}`
         });
-        
+
         table.render(container);
       } catch (error) {
         toast.error('Erro ao carregar materiais');

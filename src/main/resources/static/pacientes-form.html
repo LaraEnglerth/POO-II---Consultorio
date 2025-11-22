@@ -65,6 +65,7 @@
   <script src="./js/utils.js"></script>
   <script src="./js/components.js"></script>
   <script>
+
     document.getElementById('sidebar').innerHTML = createSidebar('pacientes');
     
     const id = getQueryParam('id');
@@ -84,7 +85,7 @@
       try {
         const paciente = await api.getPaciente(id);
         if (paciente) {
-          document.getElementById('nome_paciente').value = paciente.nome_paciente;
+          document.getElementById('nome_paciente').value = paciente.nomePaciente;
           document.getElementById('idade').value = paciente.idade;
           document.getElementById('fidelidade').value = paciente.fidelidade;
         }
@@ -135,10 +136,14 @@
       submitBtn.textContent = 'Salvando...';
       
       try {
+        const inputNome = document.getElementById('nome_paciente');
+        const inputIdade = document.getElementById('idade');
+        const inputFidelidade = document.getElementById('fidelidade');
+
         const data = {
-          nome_paciente: document.getElementById('nome_paciente').value.trim(),
-          idade: parseInt(document.getElementById('idade').value),
-          fidelidade: parseInt(document.getElementById('fidelidade').value)
+          nomePaciente: inputNome.value.trim(),
+          idade: parseInt(inputIdade.value),
+          fidelidade: parseInt(inputFidelidade.value)
         };
         
         if (isEdit) {

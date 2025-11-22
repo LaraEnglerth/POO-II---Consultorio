@@ -110,7 +110,7 @@
     function renderMateriaisOptions() {
       const sel = document.getElementById('materialSelect');
       sel.innerHTML = materiaisDisponiveis.map(m =>
-        `<option value="${m.id}" data-nome="${m.nome_material}">${m.nome_material} (disponível: ${m.quantidade})</option>`
+        `<option value="${m.id}" data-nome="${m.nomeMaterial}">${m.nomeMaterial} (disponível: ${m.quantidade})</option>`
       ).join('');
     }
 
@@ -123,8 +123,9 @@
         return;
       }
       empty.style.display = 'none';
+
       list.innerHTML = materiaisSelecionados.map((m, idx) => {
-        const nome = m.material ? m.material.nome_material : (m.nome || 'Material');
+        const nome = m.material ? (m.material.nomeMaterial || m.material.nome || 'Material') : (m.nomeMaterial || m.nome || 'Material');
         return `<li class="list-item" style="display:flex;justify-content:space-between;align-items:center;padding:.25rem 0;">
           <div>${nome} <small class="muted">x ${m.quantidade}</small></div>
           <div>
@@ -142,19 +143,34 @@
 
     document.getElementById('addMaterialBtn').addEventListener('click', () => {
       const sel = document.getElementById('materialSelect');
-      const matId = sel.value;
+      const matId = sel.value;  // string
       const qtd = parseInt(document.getElementById('materialQuantidade').value, 10) || 0;
-      if (!matId) { toast.error('Selecione um material'); return; }
-      if (qtd <= 0) { toast.error('Quantidade inválida'); return; }
-
-      const materialObj = materiaisDisponiveis.find(m => m.id === matId);
-      // se já existe, somar quantidade
-      const existing = materiaisSelecionados.find(m => m.materialId === matId);
+      if (!matId) {
+        toast.error('Selecione um material');
+        return;
+      }
+      if (qtd <= 0) {
+        toast.error('Quantidade inválida');
+        return;
+      }
+      const materialObj = materiaisDisponiveis.find(m => String(m.id) === String(matId));
+      const nomeFromSelect =
+        sel.options[sel.selectedIndex]?.dataset?.nome ||
+        materialObj?.nomeMaterial ||
+        'Material';
+      const existing = materiaisSelecionados.find(m => String(m.materialId) === String(matId));
       if (existing) {
         existing.quantidade += qtd;
+        existing.nomeMaterial = existing.nomeMaterial || nomeFromSelect;
       } else {
-        materiaisSelecionados.push({ materialId: matId, quantidade: qtd, material: materialObj });
+        materiaisSelecionados.push({
+          materialId: matId,
+          quantidade: qtd,
+          material: materialObj || null,
+          nomeMaterial: nomeFromSelect
+        });
       }
+      console.log("materiaisSelecionados depois de adicionar:", JSON.stringify(materiaisSelecionados, null, 2));
       renderMateriaisList();
     });
 
@@ -167,25 +183,28 @@
     api.getPacientes().then(pacientes => {
       const select = document.getElementById('pacienteId');
       select.innerHTML = '<option value="">Nenhum</option>' + pacientes.map(p => 
-        `<option value="${p.id}">${p.nome_paciente}</option>`
+        `<option value="${p.id}">${p.nomePaciente}</option>`
       ).join('');
       
       if (isEdit) {
         api.getProcedimento(id).then(proc => {
           if (proc) {
-            document.getElementById('nome_procedimento').value = proc.nome_procedimento;
-            document.getElementById('assistente').value = proc.assistente;
+            document.getElementById('nome_procedimento').value = proc.nomeProcedimento;
+            document.getElementById('assistente').value = proc.assistente ? 'S' : 'N';
             document.getElementById('duracao').value = proc.duracao;
             document.getElementById('valorFinal').value = proc.valorFinal;
-            document.getElementById('pacienteId').value = proc.pacienteId || '';
-
-            // Preencher materiais selecionados (proc.materiais já traz o objeto material via API)
+            document.getElementById('pacienteId').value = (proc.pacienteId ?? proc.paciente?.id ?? '');
             if (Array.isArray(proc.materiais)) {
+              
+              console.log("Materiais do procedimento (proc.materiais):", proc.materiais);
+
               materiaisSelecionados = proc.materiais.map(m => ({
-                materialId: m.materialId,
+                materialId: String(m.id),
                 quantidade: m.quantidade,
-                material: m.material
+                material: m,
+                nomeMaterial: m.nomeMaterial
               }));
+
               renderMateriaisList();
             }
           }

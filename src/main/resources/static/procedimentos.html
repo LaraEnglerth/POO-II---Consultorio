@@ -37,11 +37,14 @@
         const procedimentos = await api.getProcedimentos();
         
         const table = new DataTable(procedimentos, [
-          { key: 'nome_procedimento', label: 'Nome', sortable: true },
+          { key: 'nomeProcedimento', label: 'Nome', sortable: true },
           {
             key: 'assistente',
             label: 'Assistente',
-            render: (item) => createBadge(item.assistente === 'S' ? 'Sim' : 'Não', item.assistente === 'S' ? 'primary' : 'secondary')
+            render: (item) => createBadge(
+              item.assistente ? 'Sim' : 'Não',
+              item.assistente ? 'primary' : 'secondary'
+            )
           },
           { 
             key: 'duracao', 
@@ -61,7 +64,7 @@
             render: (item) => createActionButtons(item.id, 'viewProc', 'editProc', 'deleteProc')
           }
         ], {
-          searchKey: 'nome_procedimento',
+          searchKey: 'nomeProcedimento',
           onRowClick: (item) => window.location.href = `./procedimentos-detalhes.html?id=${item.id}`
         });
         

@@ -73,10 +73,10 @@
       document.getElementById('submitBtn').textContent = 'Atualizar';
       api.getMaterial(id).then(material => {
         if (material) {
-          document.getElementById('nome_material').value = material.nome_material;
+          document.getElementById('nome_material').value = material.nomeMaterial;
           document.getElementById('quantidade').value = material.quantidade;
           document.getElementById('valor').value = material.valor;
-          document.getElementById('reutilizavel').checked = material.reutilizavel === 'S';
+          document.getElementById('reutilizavel').checked = !!material.reutilizavel;
         }
       });
     }
@@ -93,7 +93,7 @@
           nome_material: document.getElementById('nome_material').value.trim(),
           quantidade: parseFloat(document.getElementById('quantidade').value),
           valor: parseFloat(document.getElementById('valor').value),
-          reutilizavel: document.getElementById('reutilizavel').checked ? 'S' : 'N'
+          reutilizavel: document.getElementById('reutilizavel').checked
         };
         
         if (isEdit) {
