@@ -113,11 +113,12 @@
 
     const valorFinalCard = document.getElementById('VALORFINAL');
     const submitBtn2 = document.getElementById('BTNCALCULAR');
-    // Novo procedimento (sem id): esconde o card
+    
     if (!isEdit && valorFinalCard) {
       valorFinalCard.style.display = 'none';
+    }
+    if(isViewOnly) {
       submitBtn2.style.display = 'none';
-
     }
 
     if (isEdit && !isViewOnly) {
