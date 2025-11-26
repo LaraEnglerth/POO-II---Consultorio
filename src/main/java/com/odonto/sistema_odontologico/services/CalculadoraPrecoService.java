@@ -1,12 +1,12 @@
 package com.odonto.sistema_odontologico.services;
 
-import com.odonto.sistema_odontologico.models.Material;
-import com.odonto.sistema_odontologico.models.Paciente;
-import com.odonto.sistema_odontologico.models.Procedimento;
-import org.springframework.stereotype.Service;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+
+import org.springframework.stereotype.Service;
+
+import com.odonto.sistema_odontologico.models.Material;
+import com.odonto.sistema_odontologico.models.Procedimento;
 
 /**
  * SRP: calcular preços de procedimentos
@@ -62,7 +62,7 @@ public class CalculadoraPrecoService {
      */
     private BigDecimal calcularCustoMaoObra(Procedimento procedimento) {
         BigDecimal valorPorHora = procedimento.getValorMaoObra();
-        BigDecimal duracaoDecimal = BigDecimal.valueOf(procedimento.getDuracao());
+        BigDecimal duracaoDecimal = BigDecimal.valueOf(procedimento.getDuracao()/60.0);
         return valorPorHora.multiply(duracaoDecimal);
     }
 

@@ -319,8 +319,6 @@ class API {
         materiaisIds: materiaisArr.map(m => m.materialId)
       };
 
-      alert("Payload procedimento: " + JSON.stringify(payload));
-
       const response = await fetch(`${API_BASE_URL}/procedimentos`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

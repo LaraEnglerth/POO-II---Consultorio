@@ -70,14 +70,14 @@
 
 
 
-          <div class="card" style="margin-top: 1rem;">
+          <div class="card" id="VALORFINAL" style="margin-top: 1rem;">
             <div class="card-header"><h2 class="card-title">Valor Final</h2></div>
             <div class="card-content">
               <div class="flex gap-2">
                 <div class="form-group" style="flex: 1; margin: 0;">
-                  <input type="number" id="valorFinal" class="form-input" step="0.01" min="0" required>
+                  <input type="number" id="valorFinal" class="form-input" step="0.01" min="0">
                 </div>
-                <button type="button" class="btn btn-outline" onclick="calcularValor()">Calcular</button>
+                <button type="button" class="btn btn-outline" id="BTNCALCULAR" onclick="calcularValor()">Calcular</button>
               </div>
             </div>
           </div>
@@ -110,6 +110,15 @@
       isViewOnly ? 'Detalhes do Procedimento'
       : 'Preencha os dados do procedimento'
     );
+
+    const valorFinalCard = document.getElementById('VALORFINAL');
+    const submitBtn2 = document.getElementById('BTNCALCULAR');
+    // Novo procedimento (sem id): esconde o card
+    if (!isEdit && valorFinalCard) {
+      valorFinalCard.style.display = 'none';
+      submitBtn2.style.display = 'none';
+
+    }
 
     if (isEdit && !isViewOnly) {
       document.getElementById('submitBtn').textContent = 'Atualizar';
@@ -236,7 +245,7 @@
           nomeMaterial: nomeFromSelect
         });
       }
-      //console.log("materiaisSelecionados depois de adicionar:", JSON.stringify(materiaisSelecionados, null, 2));
+      console.log("materiaisSelecionados depois de adicionar:", JSON.stringify(materiaisSelecionados, null, 2));
       renderMateriaisList();
     });
 
@@ -298,7 +307,7 @@
           nome_procedimento: document.getElementById('nome_procedimento').value.trim(),
           assistente: document.getElementById('assistente').value,
           duracao: parseFloat(document.getElementById('duracao').value),
-          valorFinal: parseFloat(document.getElementById('valorFinal').value),
+          valorFinal: 1,
           pacienteId: document.getElementById('pacienteId').value || undefined,
           materiais: materiaisSelecionados.map(m => ({ materialId: m.materialId, quantidade: m.quantidade }))
         };
