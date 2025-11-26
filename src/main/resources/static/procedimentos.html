@@ -38,14 +38,12 @@
         
         const table = new DataTable(procedimentos, [
           { key: 'nomeProcedimento', label: 'Nome', sortable: true },
-          {
-            key: 'assistente',
-            label: 'Assistente',
-            render: (item) => createBadge(
-              item.assistente ? 'Sim' : 'Não',
-              item.assistente ? 'primary' : 'secondary'
-            )
-          },
+            {
+              key: 'paciente',
+              label: 'Paciente',
+              render: (item) => item.paciente?.nomePaciente || '—'
+            },
+          
           { 
             key: 'duracao', 
             label: 'Duração', 
