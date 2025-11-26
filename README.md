@@ -63,7 +63,7 @@ A aplicação possui as seguintes funcionalidades principais:
   - Cadastro e cálculo de preços de procedimentos odontológicos.
 
 ## Autores
-- [**Lara Englerth**] (https://github.com/LaraEnglerth)
-- [**José Renato Cardoso de Campos**] (https://github.com/JoseRenatoCardoso)
+- [**Lara Englerth**](https://github.com/LaraEnglerth)
+- [**José Renato Cardoso de Campos**](https://github.com/JoseRenatoCardoso)
 - [**Nathaniel Pereira Utida**](https://github.com/NanatUtida)
 
