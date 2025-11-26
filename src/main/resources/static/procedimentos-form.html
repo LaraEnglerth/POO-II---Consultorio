@@ -41,30 +41,35 @@
             </div>
               </div>
 
-              <div class="card" style="margin-top: 1rem;">
-                <div class="card-header"><h2 class="card-title">Materiais Utilizados</h2></div>
-                <div class="card-content">
-                  <div class="grid grid-cols-3" style="align-items: end; gap: .5rem;">
-                    <div class="form-group" style="margin:0;">
-                      <label class="form-label">Material</label>
-                      <select id="materialSelect" class="form-select"></select>
+              
+                <div class="card" style="margin-top: 1rem;">
+                  <div class="card-header"><h2 class="card-title">Materiais Utilizados</h2></div>
+                  <div class="card-content">
+                    <div id="materiaisUtilizadosSection" class="grid grid-cols-3" style="align-items: end; gap: .5rem;">
+                      <div class="form-group" style="margin:0;">
+                        <label class="form-label">Material</label>
+                        <select id="materialSelect" class="form-select"></select>
+                      </div>
+                      <div class="form-group" style="margin:0;">
+                        <label class="form-label">Quantidade</label>
+                        <input type="number" id="materialQuantidade" class="form-input" min="1" step="1" value="1">
+                      </div>
+                      <div style="margin:0;">
+                        <button type="button" class="btn btn-outline" id="addMaterialBtn">Adicionar</button>
+                      </div>
                     </div>
-                    <div class="form-group" style="margin:0;">
-                      <label class="form-label">Quantidade</label>
-                      <input type="number" id="materialQuantidade" class="form-input" min="1" step="1" value="1">
-                    </div>
-                    <div style="margin:0;">
-                      <button type="button" class="btn btn-outline" id="addMaterialBtn">Adicionar</button>
-                    </div>
-                  </div>
 
-                  <div style="margin-top:1rem;">
-                    <label class="form-label">Materiais adicionados</label>
-                    <ul id="materiaisList" class="list"></ul>
-                    <small id="materiaisEmpty" class="muted">Nenhum material adicionado.</small>
+                    <div id="materiaisAdicionadosWrapper" style="margin-top:1rem;">
+                      <label class="form-label">Materiais adicionados</label>
+                      <ul id="materiaisList" class="list"></ul>
+                      <small id="materiaisEmpty" class="muted">Nenhum material adicionado.</small>
+                    </div>
                   </div>
                 </div>
-              </div>
+              
+
+
+
           <div class="card" style="margin-top: 1rem;">
             <div class="card-header"><h2 class="card-title">Valor Final</h2></div>
             <div class="card-content">
@@ -94,15 +99,62 @@
   <script>
     document.getElementById('sidebar').innerHTML = createSidebar('procedimentos');
     const id = getQueryParam('id');
+    const mode = getQueryParam('mode');
     const isEdit = !!id;
+    const isViewOnly = mode ==='view';
     
     document.getElementById('pageHeader').innerHTML = createPageHeader(
-      isEdit ? 'Editar Procedimento' : 'Novo Procedimento',
-      'Preencha os dados do procedimento'
+      isViewOnly ? 'Visualizar Procedimento'
+      : isEdit ? 'Editar Procedimento'
+      : 'Novo Procedimento',
+      isViewOnly ? 'Detalhes do Procedimento'
+      : 'Preencha os dados do procedimento'
     );
+
+    if (isEdit && !isViewOnly) {
+      document.getElementById('submitBtn').textContent = 'Atualizar';
+    }
+    function setReadOnlyMode() {
+      const formElements = document.querySelectorAll(
+        '#form input, #form select, #form textarea, #form button'
+      );
+
+      formElements.forEach(el => {
+        if (el.id === 'submitBtn') return;
+        if (el.closest('a.btn')) return;
+        if (el.classList.contains('btn-ghost') && el.textContent.includes('Voltar')) return;
+        el.disabled = true;
+      });
+
+      const submitBtn = document.getElementById('submitBtn');
+      if (submitBtn) {
+        submitBtn.style.display = 'none';
+      }
+
+      const addMaterialBtn = document.getElementById('addMaterialBtn');
+      if (addMaterialBtn) {
+        addMaterialBtn.style.display = 'none';
+      }
+
+      window.removeMaterial = function () {
+      };
+    }
+
+    if (isViewOnly) {
+      setTimeout(setReadOnlyMode, 300);
     
-    if (isEdit) document.getElementById('submitBtn').textContent = 'Atualizar';
-    
+      const matUtilizadosSection = document.getElementById('materiaisUtilizadosSection');
+      if (matUtilizadosSection) {
+        matUtilizadosSection.style.display = 'none';
+      }
+
+      const matAdicionadosWrapper = document.getElementById('materiaisAdicionadosWrapper');
+      if (matAdicionadosWrapper) {
+        matAdicionadosWrapper.style.marginTop = '0';
+      }
+    }
+
+
     // Materiais - UI e lógica
     let materiaisDisponiveis = [];
     let materiaisSelecionados = [];
@@ -126,13 +178,27 @@
 
       list.innerHTML = materiaisSelecionados.map((m, idx) => {
         const nome = m.material ? (m.material.nomeMaterial || m.material.nome || 'Material') : (m.nomeMaterial || m.nome || 'Material');
-        return `<li class="list-item" style="display:flex;justify-content:space-between;align-items:center;padding:.25rem 0;">
-          <div>${nome} <small class="muted">x ${m.quantidade}</small></div>
-          <div>
-            <button type="button" class="btn btn-ghost" onclick="removeMaterial(${idx})">Remover</button>
-          </div>
-        </li>`;
+
+        // Se estiver em modo visualização: só o nome
+        if (isViewOnly) {
+          return `
+            <li class="list-item" style="list-style:none;justify-content:space-between;align-items:center;padding:.25rem 0;">
+              <div>${nome}</div>
+            </li>
+          `;
+        }
+
+        // No modo normal (cadastro/edição): nome + quantidade + botão remover
+        return `
+          <li class="list-item" style="display:flex;justify-content:space-between;align-items:center;padding:.25rem 0;">
+            <div>${nome} <small class="muted">x ${m.quantidade}</small></div>
+            <div>
+              <button type="button" class="btn btn-ghost" onclick="removeMaterial(${idx})">Remover</button>
+            </div>
+          </li>
+        `;
       }).join('');
+
     }
 
     // Tornar a função global para uso no onclick inline
@@ -170,7 +236,7 @@
           nomeMaterial: nomeFromSelect
         });
       }
-      console.log("materiaisSelecionados depois de adicionar:", JSON.stringify(materiaisSelecionados, null, 2));
+      //console.log("materiaisSelecionados depois de adicionar:", JSON.stringify(materiaisSelecionados, null, 2));
       renderMateriaisList();
     });
 

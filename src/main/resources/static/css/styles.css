@@ -52,6 +52,11 @@ body {
   line-height: 1.6;
 }
 
+/* Se a página de procedimentos é um arquivo separado, isso já pode bastar */
+body[data-page="procedimentos"] .table-actions button:nth-child(2) {
+  display: none;
+}
+
 /* Layout Principal */
 .app-container {
   display: flex;
