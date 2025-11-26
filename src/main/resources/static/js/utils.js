@@ -287,6 +287,16 @@ class DataTable {
         this.render(container);
       });
     }
+    
+    // Restaura o foco no campo de busca, se existir
+    if (this.searchKey) {
+      const searchInput = document.getElementById('searchInput');
+      if (searchInput) {
+        searchInput.focus(); // Restaura o foco no campo de busca
+        const length = searchInput.value.length; // Obtém o comprimento do texto
+        searchInput.setSelectionRange(length, length); // Move o cursor para o final
+      }
+    }
   }
 }
 
